@@ -1,0 +1,5 @@
+The DataMigrator Framwork is using following nuget-packages:
+
+Trinet.Core.IO.Ntfs, Copyright 2015 Richard Deeming, Licensed under COPL
+protobuf-net, Copyright 2008 Marc Gravell, Apache License Version 2.0
+CodeFluentRuntimeClient, SoftFluent, license: http://www.softfluent.com/files/docs/eula/CodeFluentRuntimeClient_EULA.pdf

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<nlog xmlns="http://www.nlog-project.org/schemas/NLog.xsd"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      autoReload="true" throwExceptions="true">
+  <targets>
+    <target xsi:type="File" name="ErrorLog" fileName="${basedir}/logs/error_${shortdate}.log"
+            layout="${longdate}|${uppercase:${level}}${newline}${message}${newline}${exception}${newline}${stacktrace}" />
+  </targets>
+  <targets>
+    <target xsi:type="File" name="TraceLog" fileName="${basedir}/logs/trace_${shortdate}.log"
+            layout="${longdate}|${uppercase:${level}}${newline}${message}${newline}${exception}${newline}${stacktrace}" />
+  </targets>
+  <rules>
+    <logger name="*" level="Error" writeTo="ErrorLog" />
+    <!--    <logger name="*" level="Trace" writeTo="TraceLog" />-->
+  </rules>
+</nlog>

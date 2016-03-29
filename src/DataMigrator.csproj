@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7F952165-681C-421C-BC36-CE7131294FCD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DataMigrator</RootNamespace>
+    <AssemblyName>DataMigrator</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CodeFluent.Runtime.Client, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1bb6d7cccf1045ec, processorArchitecture=MSIL">
+      <HintPath>..\..\TeamplaceMigrator\packages\CodeFluentRuntimeClient.1.0.0.818\lib\CodeFluent.Runtime.Client.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NLog, Version=4.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\..\TeamplaceMigrator\packages\NLog.4.1.0\lib\net45\NLog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <HintPath>..\..\TeamplaceMigrator\packages\protobuf-net.2.0.0.668\lib\net40\protobuf-net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Trinet.Core.IO.Ntfs, Version=3.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\TeamplaceMigrator\packages\Trinet.Core.IO.Ntfs.3.5.0.0\lib\net35\Trinet.Core.IO.Ntfs.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Adapters\Base\Directory\DirectoryAdapterBase.cs" />
+    <Compile Include="Adapters\NTFS\File\NtfsFileAdapter.cs" />
+    <Compile Include="Adapters\Base\File\FileAdapterBase.cs" />
+    <Compile Include="Adapters\Base\Directory\IDirectoryAdapter.cs" />
+    <Compile Include="Adapters\Base\File\IFileAdapter.cs" />
+    <Compile Include="Adapters\Base\IContentAdapter.cs" />
+    <Compile Include="Adapters\NTFS\Directory\INtfsDirectoryAdapter.cs" />
+    <Compile Include="Adapters\NTFS\INtfsAdapter.cs" />
+    <Compile Include="Adapters\NTFS\Directory\NtfsDirectoryAdapter.cs" />
+    <Compile Include="Configuration\ContainerConfiguration.cs" />
+    <Compile Include="Configuration\ProtoConfiguration.cs" />
+    <Compile Include="Enumerator\Base\DirectoryHeaderTreeNodeBase.cs" />
+    <Compile Include="Enumerator\Base\ITreeElement.cs" />
+    <Compile Include="Enumerator\Base\ITreeNode.cs" />
+    <Compile Include="Enumerator\Base\TreeEnumerator.cs" />
+    <Compile Include="Enumerator\Base\TreeNode.cs" />
+    <Compile Include="Enumerator\DirectoryHeader\DirectoryHeaderEnumerator.cs" />
+    <Compile Include="Enumerator\DirectoryHeader\DirectoryHeaderTreeNode.cs" />
+    <Compile Include="Enumerator\DirectoryHeader\GenericDirectoryHeaderEnumerator.cs" />
+    <Compile Include="Enumerator\Filesystem\FilesystemEnumerator.cs" />
+    <Compile Include="Enumerator\ContentMapping\DirectoryHeaderMappingEnumerator.cs" />
+    <Compile Include="Enumerator\ContentMapping\NtfsDirectoryHeaderMappingEnumerator.cs" />
+    <Compile Include="Exception\ContainerOperationException.cs" />
+    <Compile Include="Exception\ImportFailedException.cs" />
+    <Compile Include="Exception\ContainerTooSmallException.cs" />
+    <Compile Include="Exception\InvalidContainerException.cs" />
+    <Compile Include="Exception\MainPartNotFoundException.cs" />
+    <Compile Include="Factory\Container\Directory\DirectoryContainerFactory.cs" />
+    <Compile Include="Factory\Base\Container\NtfsContainerFactory.cs" />
+    <Compile Include="Factory\Container\File\NtfsFileContainerFactory.cs" />
+    <Compile Include="Factory\Container\File\FileContainerFactory.cs" />
+    <Compile Include="Factory\Container\Directory\NtfsDirectoryContainerFactory.cs" />
+    <Compile Include="FileSystem\JunctionPoint.cs" />
+    <Compile Include="FileSystem\Win32File.cs" />
+    <Compile Include="FileSystem\Win32Api.cs" />
+    <Compile Include="Helper\BigEndian.cs" />
+    <Compile Include="Helper\DateTimeExtensions.cs" />
+    <Compile Include="Helper\DirectoryInfoExtensions.cs" />
+    <Compile Include="Container\Base\Body\ContainerBody.cs" />
+    <Compile Include="Container\Base\Body\IContainerBody.cs" />
+    <Compile Include="Container\Base\ContainerMetaDescription.cs" />
+    <Compile Include="Container\Base\Header\IFilesystemHeader.cs" />
+    <Compile Include="Container\DirectoryContainer\DirectoryContainerInfoBase.cs" />
+    <Compile Include="Container\NtfsDirectoryContainer\INtfsDirectoryHeader.cs" />
+    <Compile Include="Container\NtfsDirectoryContainer\NtfsDirectoryContainerInfo.cs" />
+    <Compile Include="Container\Base\Header\FilesystemHeader.cs" />
+    <Compile Include="Container\Base\Header\IContentHeader.cs" />
+    <Compile Include="Container\Base\Header\IHeader.cs" />
+    <Compile Include="Container\Base\Header\IProtoHeader.cs" />
+    <Compile Include="Container\Base\Header\IStartHeader.cs" />
+    <Compile Include="Container\Base\Header\ProtoHeader.cs" />
+    <Compile Include="Container\Base\MigrationContainer.cs" />
+    <Compile Include="Container\Base\MigrationContainerInfo.cs" />
+    <Compile Include="Container\Base\Header\Header.cs" />
+    <Compile Include="Container\Base\Header\StartHeader.cs" />
+    <Compile Include="Exception\MissingPartException.cs" />
+    <Compile Include="Container\DirectoryContainer\Header\DirectoryHeader.cs" />
+    <Compile Include="Container\DirectoryContainer\Base\DirectoryHeaderBase.cs" />
+    <Compile Include="Container\DirectoryContainer\Base\IDirectoryHeaderBase.cs" />
+    <Compile Include="Container\Base\Header\INtfsFilesystemHeader.cs" />
+    <Compile Include="Container\FileContainer\FileContainerInfoBase.cs" />
+    <Compile Include="Container\Base\Header\AlternateStreamHeader.cs" />
+    <Compile Include="Container\NtfsDirectoryContainer\JunctionHeader.cs" />
+    <Compile Include="Container\NtfsDirectoryContainer\NtfsDirectoryHeader.cs" />
+    <Compile Include="Container\FileContainer\FileContainerInfo.cs" />
+    <Compile Include="Helper\StreamExtensions.cs" />
+    <Compile Include="Container\FileContainer\Header\FileHeader.cs" />
+    <Compile Include="Container\DirectoryContainer\DirectoryContainerInfo.cs" />
+    <Compile Include="Container\FileContainer\Header\NtfsFileHeader.cs" />
+    <Compile Include="Container\FileContainer\NtfsFileContainerInfo.cs" />
+    <Compile Include="Serialization\Base\IContainerSerializer.cs" />
+    <Compile Include="Serialization\Ntfs\NtfsSerializer.cs" />
+    <Compile Include="Factory\Parameters\NtfsDirectorySerializationParametersFactory.cs" />
+    <Compile Include="Factory\Parameters\NtfsFileSerializationParametersFactory.cs" />
+    <Compile Include="Factory\Base\Parameters\SerializationParametersFactory.cs" />
+    <Compile Include="Serialization\Partitioning\Base\IPartitionInfo.cs" />
+    <Compile Include="Enumerator\ContentMapping\IHeaderSourceMapping.cs" />
+    <Compile Include="Serialization\Partitioning\Base\IPartitioningScheme.cs" />
+    <Compile Include="Serialization\Parameters\Base\ISerializationParameters.cs" />
+    <Compile Include="Serialization\Partitioning\DirectoryContainer\DirectoryContainerPartitionerBase.cs" />
+    <Compile Include="Serialization\Parameters\DirectoryContainer\DirectoryContainerSerializationParametersBase.cs" />
+    <Compile Include="Serialization\Partitioning\DirectoryContainer\NtfsDirectoryContainerPartitioner.cs" />
+    <Compile Include="Serialization\Parameters\FileContainer\FileContainerSerializationParameters.cs" />
+    <Compile Include="Serialization\Partitioning\FileContainer\FileContainerPartitioner.cs" />
+    <Compile Include="Serialization\Partitioning\FileContainer\NtfsFileContainerPartitioner.cs" />
+    <Compile Include="Serialization\Partitioning\DirectoryContainer\DirectoryContainerPartitioner.cs" />
+    <Compile Include="Serialization\Partitioning\Base\IContainerPartitioner.cs" />
+    <Compile Include="Serialization\Partitioning\Base\PartitioningScheme.cs" />
+    <Compile Include="Serialization\Parameters\Base\SerializationParameters.cs" />
+    <Compile Include="Serialization\Partitioning\Base\PartitionInfo.cs" />
+    <Compile Include="Enumerator\ContentMapping\HeaderSourceMapping.cs" />
+    <Compile Include="Enumerator\ContentMapping\ContentMappingEnumerator.cs" />
+    <Compile Include="Serialization\Parameters\DirectoryContainer\DirectoryContainerSerializationParameters.cs" />
+    <Compile Include="Enumerator\Filesystem\FilesystemTreeNode.cs" />
+    <Compile Include="Enumerator\Base\TreeElement.cs" />
+    <Compile Include="Serialization\Base\ContainerSerializer.cs" />
+    <Compile Include="Serialization\Partitioning\FileContainer\FileContainerPartitionerBase.cs" />
+    <Compile Include="Serialization\Parameters\FileContainer\FileContainerSerializationParametersBase.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Factory\Base\Container\MigrationContainerFactory.cs" />
+    <Compile Include="Serialization\Parameters\FileContainer\NtfsFileContainerSerializationParameters.cs" />
+    <Compile Include="Serialization\Partitioning\Stream\SubStream.cs" />
+    <Compile Include="Serialization\Partitioning\Stream\CompositeStream.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="External\Readme.txt" />
+    <Content Include="External\x64\CodeFluent.Runtime.Compression.dll" />
+    <Content Include="External\x86\CodeFluent.Runtime.Compression.dll" />
+    <Content Include="nlog.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
