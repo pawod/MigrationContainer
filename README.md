@@ -29,6 +29,6 @@ As your service grows you will probably hit the limits of your system's architec
 ### Note
 This framework is the result of a request made by [Teamplace](https://www.teamplace.net/en/). Simultaneously it also served as topic for my bachelor's [thesis](https://drive.google.com/open?id=0B_-vg-Ca4cDReUQ5LTZvWk0zemc). With kind permission of Teamplace the main framework is now released to the public. 
 
-Probably the DataMigrator could be converted into a Mono project to be usend on further platforms, not only Windows as currently.
+Probably the DataMigrator could be converted into a Mono project to be used on further platforms, not only Windows as currently.
 
 More details on the Data Migrator's background, its use and the underlying container format can be found in the wiki or the [thesis](https://drive.google.com/open?id=0B_-vg-Ca4cDReUQ5LTZvWk0zemc) itself.
