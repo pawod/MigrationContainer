@@ -13,7 +13,7 @@ This framework helps you to perform automated data migrations between heterogene
 
 ### Why do I need this?
 Imagine you are running some kind of cloud service or complex system which has grown historically over many years. It stores tons of persistent data spread around various components using different technologies.
-As your service grows you will probably hit the limits of your system's architecture at some point of time. You might be forced to make significant changes in order preserve your service's performance and maintainability. However this will also require to transfer all existing data to the new environment. With increasing technical divergence this will become a complex task as there is no trivial one-to-one mapping between source and target system. This is where the Data Migrator comes in handy.
+As your service grows you will probably hit the limits of your system's architecture at some point of time. You might be forced to make significant changes in order to preserve your service's performance and maintainability. However this will also require to transfer all existing data to the new environment. With increasing technical divergence this will become a complex task as there is no trivial one-to-one mapping between source and target system. This is where the Data Migrator comes in handy.
 
 
 ### Features
