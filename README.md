@@ -7,11 +7,10 @@
 
 4. [Use of Migration Containers](#4-use-of-migration-containers)
 
-   - [Container Types](#container-types)
-
-   - [Extending Container Types](#extending-container-types)
-   - [Exporting Data (Creating Containers)](#exporting-data-creating-containers)
-   - [Importing Data (Extracting Data From Containers)](#importing-data-extracting-data-from-containers)
+   - [Container Types](#4.1-container-types)
+   - [Extending Container Types](#4.2-extending-container-types)
+   - [Exporting Data (Creating Containers)](#4.3-exporting-data-creating-containers)
+   - [Importing Data (Extracting Data From Containers)](#4.4-importing-data-extracting-data-from-containers)
 
 5. [Technical Details](technical-details)
    - [Container Format](#container-format)
@@ -154,6 +153,6 @@ It is important that you perform this registration for all of your types at star
 
 **TODO**
 
-## 4.4 Importing Data (Extracting Data From Containers)
+### 4.4 Importing Data (Extracting Data From Containers)
 
 **TODO**
