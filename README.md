@@ -74,14 +74,14 @@ With MigrationContainer you can create and access physical *migration containers
 
 If you are planning to access or even create containers outside this project, you will need to make yourself familiar with the  container's specifications. See the second part of this wiki: [Container Format Specification](#2-container-format-specification) for more details.
 
-### Container Types
+### 4.1 Container Types
 MigrationContainer provides two basic types of containers:
 
 1. `NtfsFileContainer` : Creates an image of a single NTFS file and its meta data.
 2. `NtfsDirectoryContainer`: Creates an image of an entire NTFS directory including all files and subdirectories.
 
 
-### Extending Container Types
+### 4.2 Extending Container Types
 
 **Defining a New Container Type**
 
@@ -94,8 +94,6 @@ All types of containers must inherit from the abstract class` MigrationContainer
 `TBody`: A type inheriting from `IContainerBody`. It provides the functionality for access and (de-)serialization of content stored in a container's body. For more details on a migration container's format see the [container format specification]().
 
 Also note that each container class should be decorated with the `ContainerMetaDescription` attribute to specify the format's file extension.
-
-
 
 **Registering a Container Type to the Protobuf Type Hierarchy**
 
@@ -152,18 +150,10 @@ It is important that you perform this registration for all of your types at star
         }
     }
     
-## Exporting Data (Creating Containers)
+### 4.3 Exporting Data (Creating Containers)
 
 **TODO**
 
-## Importing Data (Extracting Data From Containers)
+## 4.4 Importing Data (Extracting Data From Containers)
 
 **TODO**
-
-
-### Note
-This framework is the result of a request made by [Teamplace](https://www.teamplace.net/en/). Simultaneously it also served as topic for my bachelor's [thesis](https://drive.google.com/open?id=0B_-vg-Ca4cDReUQ5LTZvWk0zemc). With kind permission of Teamplace the main framework is now released to the public. 
-
-Probably MigrationContainer could be converted into a Mono/DNX project to be used on further platforms, not only Windows as currently.
-
-More details on MigrationContainer's background, its use and the underlying container format can be found in the wiki or the [thesis](https://drive.google.com/open?id=0B_-vg-Ca4cDReUQ5LTZvWk0zemc) itself.
