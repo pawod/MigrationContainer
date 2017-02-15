@@ -1,6 +1,6 @@
 # Data Migrator
 
-The Data Migrator is a framework, which enables you to create platform independent container files for the purpose of data migration or backups. It is implemented in C# (.NET Framework 4.5) and uses [Marc Gravell's Implementation](https://github.com/mgravell/protobuf-net) of Google's Protocol Buffers for (de-)serialization of aforementioned containers.
+The Data Migrator is a framework, which enables you to create platform independent container files for the purpose of data migration or backups. It is implemented in C# (.NET Framework 4.6) and uses [Marc Gravell's Implementation](https://github.com/mgravell/protobuf-net) of Google's Protocol Buffers for (de-)serialization of aforementioned containers.
 
 
 ###What it does
