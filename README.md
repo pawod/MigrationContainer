@@ -1,6 +1,6 @@
-# Data Migrator
+# MigrationContainer
 
-The Data Migrator is a framework, which enables you to create platform independent container files for the purpose of data migration or backups. It is implemented in C# (.NET Framework 4.6) and uses [Marc Gravell's Implementation](https://github.com/mgravell/protobuf-net) of Google's Protocol Buffers for (de-)serialization of aforementioned containers.
+The MigrationContainer is a framework, which enables you to create platform independent container files for the purpose of data migration or backups. It is implemented in C# (.NET Framework 4.6) and uses [Marc Gravell's Implementation](https://github.com/mgravell/protobuf-net) of Google's Protocol Buffers for (de-)serialization of aforementioned containers.
 
 
 ###What it does
@@ -13,7 +13,7 @@ This framework helps you to perform automated data migrations between heterogene
 
 ### Why do I need this?
 Imagine you are running some kind of cloud service or complex system which has grown historically over many years. It stores tons of persistent data spread around various components using different technologies.
-As your service grows you will probably hit the limits of your system's architecture at some point of time. You might be forced to make significant changes in order to preserve your service's performance and maintainability. However this will also require to transfer all existing data to the new environment. With increasing technical divergence this will become a complex task as there is no trivial one-to-one mapping between source and target system. This is where the Data Migrator comes in handy.
+As your service grows you will probably hit the limits of your system's architecture at some point of time. You might be forced to make significant changes in order to preserve your service's performance and maintainability. However this will also require to transfer all existing data to the new environment. With increasing technical divergence this will become a complex task as there is no trivial one-to-one mapping between source and target system. This is where MigrationContainer comes in handy.
 
 
 ### Features
@@ -29,6 +29,6 @@ As your service grows you will probably hit the limits of your system's architec
 ### Note
 This framework is the result of a request made by [Teamplace](https://www.teamplace.net/en/). Simultaneously it also served as topic for my bachelor's [thesis](https://drive.google.com/open?id=0B_-vg-Ca4cDReUQ5LTZvWk0zemc). With kind permission of Teamplace the main framework is now released to the public. 
 
-Probably the DataMigrator could be converted into a Mono project to be used on further platforms, not only Windows as currently.
+Probably MigrationContainer could be converted into a Mono project to be used on further platforms, not only Windows as currently.
 
-More details on the Data Migrator's background, its use and the underlying container format can be found in the wiki or the [thesis](https://drive.google.com/open?id=0B_-vg-Ca4cDReUQ5LTZvWk0zemc) itself.
+More details on MigrationContainer's background, its use and the underlying container format can be found in the wiki or the [thesis](https://drive.google.com/open?id=0B_-vg-Ca4cDReUQ5LTZvWk0zemc) itself.
