@@ -1,16 +1,15 @@
-﻿namespace DataMigrator.Exception
-{
-    using System;
-    using Container.Base.Header;
+﻿using Pawod.MigrationContainer.Container.Header.Base;
 
-    public class ImportFailedException : Exception
+namespace Pawod.MigrationContainer.Exception
+{
+    public class ImportFailedException : System.Exception
     {
         public readonly string ContentName;
 
-        public ImportFailedException(IContentHeader contentHeader, Exception ex)
-            : base(string.Format("Failed to import content: '{0}'", contentHeader.OriginalName), ex)
+        public ImportFailedException(IFileHeader fileHeader, System.Exception ex)
+            : base($"Failed to import content: '{fileHeader.OriginalName}'", ex)
         {
-            ContentName = contentHeader.OriginalName;
+            ContentName = fileHeader.OriginalName;
         }
     }
 }

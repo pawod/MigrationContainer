@@ -1,18 +1,17 @@
-﻿namespace DataMigratorTest.Other
-{
-    using System;
-    using System.IO;
-    using DataMigrator.Helper;
-    using FluentAssertions;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.IO;
+using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Pawod.MigrationContainer.Extensions;
 
+namespace Pawod.MigrationContainer.Test.Other
+{
     [TestClass]
     public class StreamExtensionsTest
     {
         #region medthods
 
-
-        public static readonly Random Random = new Random();
+        private static readonly Random Random = new Random();
 
         [TestMethod]
         public void CopyToTest()
@@ -24,13 +23,13 @@
                 var source = new MemoryStream(sourceBytes);
                 var target = new MemoryStream(targetBytes);
 
-                var sourceOffset = Random.Next((int)source.Length);
-                var targetOffset = Random.Next((int)target.Length);
+                var sourceOffset = Random.Next((int) source.Length);
+                var targetOffset = Random.Next((int) target.Length);
 
-                var targetLimit = (int)target.Length - targetOffset;
-                var sourceLimit = (int)source.Length - sourceOffset;
+                var targetLimit = (int) target.Length - targetOffset;
+                var sourceLimit = (int) source.Length - sourceOffset;
 
-                var countLimit = targetLimit < sourceLimit? targetLimit : sourceLimit;
+                var countLimit = targetLimit < sourceLimit ? targetLimit : sourceLimit;
                 var count = Random.Next(countLimit + 1);
 
                 var bufferSize = Random.Next(1, count + 1);
@@ -38,23 +37,16 @@
                 source.CopyTo(target, sourceOffset, targetOffset, count, bufferSize);
 
                 targetBytes = target.ToArray();
-                for (var i = 0; i < count; i++)
-                {
-                    targetBytes[targetOffset + i].Should().Be(sourceBytes[sourceOffset + i]);
-                }
+                for (var i = 0; i < count; i++) { targetBytes[targetOffset + i].Should().Be(sourceBytes[sourceOffset + i]); }
             }
         }
 
-        public byte[] GetRandomByteArray(int maxSize)
+        private byte[] GetRandomByteArray(int maxSize)
         {
             var bytes = new byte[Random.Next(1, maxSize)];
-            for (var i = 0; i < bytes.Length; i++)
-            {
-                bytes[i] = (byte)Random.Next(maxSize);
-            }
+            for (var i = 0; i < bytes.Length; i++) { bytes[i] = (byte) Random.Next(maxSize); }
             return bytes;
         }
-
 
         #endregion
     }

@@ -1,8 +1,6 @@
-﻿namespace DataMigrator.Exception
+﻿namespace Pawod.MigrationContainer.Exception
 {
-    using System;
-
-    public class MissingPartException : Exception
+    public class MissingPartException : System.Exception
     {
         public int Found { get; protected set; }
         public int Parts { get; protected set; }
@@ -15,9 +13,7 @@
 
         private static string CreateMessage(int parts, int found)
         {
-            return string.Format("Could not find all parts of a MigrationContainer. Required: {0}. Found: {1}.",
-                parts,
-                found);
+            return $"Could not find all parts of a MigrationContainer. Required: {parts}. Found: {found}.";
         }
     }
 }

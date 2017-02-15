@@ -1,10 +1,8 @@
-﻿namespace DataMigrator.Exception
+﻿namespace Pawod.MigrationContainer.Exception
 {
-    using System;
-
-    public class ContainerOperationException : Exception
+    public class ContainerOperationException : System.Exception
     {
-        public ContainerOperationException(string message, Exception ex) : base(message, ex)
+        public ContainerOperationException(string message, System.Exception ex) : base(message, ex)
         {
         }
     }

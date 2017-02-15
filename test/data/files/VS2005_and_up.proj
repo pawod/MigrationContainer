@@ -1,0 +1,762 @@
+<Project
+	DefaultTargets="ReBuild" xmlns="http://schemas.microsoft.com/developer/msbuild/2003"
+	ToolsVersion="3.5">		
+	<!-- ThinPrintFileVersion>-->
+	<PropertyGroup>
+		<ThinPrintFileVersion>1.0.315.1</ThinPrintFileVersion>
+		<ThinPrintFileName>VS2005_and_up.proj</ThinPrintFileName>
+	</PropertyGroup>
+	<PropertyGroup>
+		<MsBuildConfigFilePath>$(MSBuildProjectDirectory)\Buildserver\$(MsBuildConfigName).config.proj</MsBuildConfigFilePath>
+	</PropertyGroup>
+	
+	<Import
+		Project="$(MSBuildProjectDirectory)\Tools\ThinPrint.MSBuild.targets"
+		Condition="EXISTS('$(MSBuildProjectDirectory)\Tools\ThinPrint.MSBuild.targets')" />				
+			
+	<Import
+		Project="$(MsBuildConfigFilePath)"
+		Condition="EXISTS('$(MsBuildConfigFilePath)')" />			
+			
+	<Import
+		Project="$(DotfuscatorTargetsFile)"
+		Condition="EXISTS('$(DotfuscatorTargetsFile)')" />	
+	
+	<Target
+		Name="ReBuild"
+		DependsOnTargets="TPBeforeBuild;Build;WixBuild;AfterBuild" />	
+	
+	<Target
+		Name="Build"
+		Outputs="%(VCBuildConfig.Platform) - %(VCBuildConfig.Configuration) - %(VCBuildConfig.Target) - %(VCBuildConfig.Projects) - %(VCBuildConfig.ReleaseFolder)">												
+		
+		
+		
+		<SetEnvironmentVariable
+			Condition="'$(CustomRevision)' != ''"
+			Name="MkVersioRevision"
+			Variable="-r $(CustomRevision)" />								
+		
+		<!-- Fixing Item Meta Data when with old config file +++++++++++++++++++++++++++++++++++++
+		++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->	
+		
+		<MSBuild
+			Projects="$(MSBuildProjectFile)"
+			Targets="FixMetaData" />			
+		
+		<!-- Done fixing metadata ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++		
+		++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+		
+		<Message
+			Text="Target: Build" />												
+		
+		<!-- Build -->		
+		<MSBuild
+			Projects="$(MSBuildProjectFile)"
+			Properties="	VSConfiguration=%(VCBuildConfig.Configuration);
+								VSPlatform=%(VCBuildConfig.Platform);
+								VSTarget=%(VCBuildConfig.ItemTarget);
+								VSProjects=%(VCBuildConfig.Projects);
+								VSSolution=%(VCBuildConfig.Solution);								
+								VSLocalize=%(VCBuildConfig.Identity);
+								VSConfigurationPrefix=%(VCBuildConfig.ConfigurationPrefix);"
+			Targets="BuildSubTarget" />			
+			
+		<!--create publisher policy file-->
+		<MSBuild
+			Projects="$(MSBuildProjectFile)"
+			Properties="	AssemblyFileName=%(VCBuildConfig.PP_File);	
+								AssemblyFilePath=%(VCBuildConfig.ReleaseFolder);	
+								PP_Platform=%(VCBuildConfig.PP_Platform);
+								AssemblyLinkerFile=%(VCBuildConfig.PP_AssemblyLinkerFile);
+								CompanyName=%(VCBuildConfig.PP_CompanyName);
+								Copyright=%(VCBuildConfig.PP_Copyright);
+								Description=%(VCBuildConfig.PP_Description);
+								KeyFile=%(VCBuildConfig.PP_KeyFile)"
+			Targets="CreatePublisherPolicy"
+			Condition="'$(BuildPolicyFile)' == 'true'" />
+		
+		<!-- CopyPrepareSigning -->
+		<MSBuild
+			Projects="$(MSBuildProjectFile)"
+			Properties="ReleaseFolder=%(VCBuildConfig.ReleaseFolder);
+							 FilesToCopy=%(VCBuildConfig.FilesToCopy)"
+			Targets="CopyPrepareSigning" />				
+					
+		<!--obfuscate the assembly-->
+		<Error
+			Text="The Obfuscation targets file was not found at the specified location: '$(DotfuscatorTargetsFile)'.%0AEither set the Property 'VCBuildConfig.Obfuscate' to false, or provide the correct path to the required targets file."
+			Condition="'%(VCBuildConfig.Obfuscate)' == 'true' AND !EXISTS('$(DotfuscatorTargetsFile)') " />
+		
+		<!-- Prepare Obfuscation -> copy $(ReleaseFileName) files from $(NotObfuscatedFolder) -> $(ReleaseFolder) and reverse -->		
+		<MsBuild
+			Projects="$(MSBuildProjectFile)"
+			Properties="ReleaseFileName=%(VCBuildConfig.ReleaseFileName);ReleaseFolder=%(VCBuildConfig.ReleaseFolder);NotObfuscatedFolder=%(VCBuildConfig.NotObfuscatedFolder)"
+			ContinueOnError="false"
+			Condition="'%(VCBuildConfig.Obfuscate)' == 'true'"
+			Targets="CopyPrepareObfuscation" />
+		
+		<MsBuild
+			Projects="$(DotfuscatorTargetsFile)"
+			Properties="ConfigPath=%(VCBuildConfig.ConfigPath)"
+			ContinueOnError="$(IgnoreObfuscationError)"
+			Condition="'%(VCBuildConfig.Obfuscate)' == 'true'"
+			Targets="Dotfuscate" />		
+					
+		<!--copy original files to NotObfuscated folder -->		
+		<MSBuild
+			Projects="$(MSBuildProjectFile)"
+			Properties="	NotObfuscatedFiles=%(VCBuildConfig.NotObfuscatedFiles);
+								NotObfuscatedFolder=%(VCBuildConfig.NotObfuscatedFolder)"
+			Targets="CopyNotFuscatedFiles"
+			Condition="'%(VCBuildConfig.Obfuscate)' == 'true'" />
+				 
+		<!-- Sign Files -->
+		<MSBuild
+			Projects="$(MSBuildProjectFile)"
+			Properties="SignFiles=%(VCBuildConfig.ReleaseFileName);SignPath=%(VCBuildConfig.ReleaseFolder);DriverSign=%(VCBuildConfig.DriverSign)"
+			Targets="SignFiles"
+			Condition="'$(SignFiles)' != 'false'" />	
+
+		<!-- Show the version information for the buildserver-->
+		<MSBuild
+			Projects="$(MSBuildProjectFile)"
+			Properties="SignFiles=%(VCBuildConfig.ReleaseFileName);SignPath=%(VCBuildConfig.ReleaseFolder)"
+			Targets="FBDisplayVersionNumbers" />
+		
+		<!-- Create WebPackage -->		
+		<!--
+		<MSBuild Projects="$(MSBuildProjectFile)"
+				 Properties="	VersionReferenceFile=%(VCBuildConfig.VersionReferenceFile);
+								SourceFolder=%(VCBuildConfig.SourceFolder);
+								OututFilePath=%(VCBuildConfig.ZipOutputFilePath)"
+				 Targets="CompressWebDir"
+				 Condition="'%(VCBuildConfig.ZipOutputFilePath)' != '' AND '%(VCBuildConfig.CreateZip)' == 'true'"
+		/>
+		-->
+		
+		<!--<MSBuild Projects="$(MSBuildProjectFile)"
+				 Properties="	PackageTmp=%(VCBuildConfig.PackageTmp);
+								PublishTmp=%(VCBuildConfig.PublishTmp);
+								PackeFilePath=%(VCBuildConfig.PackeFilePath);
+								MsDeployToolsPath=%(VCBuildConfig.PackeFilePath)"
+				 Targets="MergePackage"
+				 Condition="'%(VCBuildConfig.PackeFilePath)' != '' AND '%(VCBuildConfig.MergeWebPackage)' == 'true'"
+		/>
+		-->				
+	</Target>
+
+	
+	<Target
+		Name="BuildSubTarget">	
+		
+		<!--get the VisualStudio Version-->		
+		<GetVisualStudioProjectVersion
+			ProjectFilePath="$(VSProjects)"
+			Condition="'$(VSProjects)' != ''">
+			<Output
+				TaskParameter="ProjectVersion"
+				PropertyName="VisualStudioVersion" />
+		</GetVisualStudioProjectVersion>
+					
+		<CreateProperty
+			Value="$(ToolsVersion)">
+            <Output
+				TaskParameter="Value"
+				PropertyName="CompileToolsVersion" />
+        </CreateProperty>
+				
+		<CreateProperty
+			Condition="'$(VisualStudioVersion)' != '' AND '$(VisualStudioVersion)' &lt; '9'"
+			Value="2.0">
+            <Output
+				TaskParameter="Value"
+				PropertyName="CompileToolsVersion" />
+        </CreateProperty>
+		
+		
+		
+		<!-- Iterate Configurations -->
+		<CreateItem
+			Include="$(VSConfiguration)">
+			<Output
+				TaskParameter="Include"
+				ItemName="VCBuildConfigigurations" />
+		</CreateItem>					
+		
+		<Message
+			Text="Platform: $(VSPlatform) " />		
+		<Message
+			Text="ConfigurationsIdentity: %(VCBuildConfigigurations.Identity)" />		
+		<Message
+			Text="Target: $(VSTarget)" />
+		<Message
+			Text="Project: '$(VSProjects)'" />
+		<Message
+			Text="Localize: true"
+			Condition="'$(VSLocalize)' == 'localize'" />
+		<Message
+			Text="ConfigurationPrefix: $(VSConfigurationPrefix)"
+			Condition="'$(VSLocalize)' == 'localize'"></Message>
+		<Message
+			Text="No Solution file is defined in Buildserver Project configuration file: $(MsBuildConfigName)"
+			Condition="'$(VSSolution)' == ''"
+			Importance="high" />
+		<Message
+			Text="Solution file: '$(VSSolution)'"
+			Condition="'$(VSSolution)' != ''" />			
+		<Message
+			Text="Switch ToolsVersion to 2.0 for Vs2005 Project Files..."
+			Condition="'$(CompileToolsVersion)' == '2.0'" />			
+		
+		
+		
+		<!-- Configuration given -->
+		<MSBuild
+			Projects="$(VSSolution)"
+			Properties="	Configuration=%(VCBuildConfigigurations.Identity);
+								Platform=$(VSPlatform);
+								CurrentTarget=$(VSTarget)"
+			Targets="$(VSTarget)"
+			Condition="'$(VSLocalize)' != 'localize' AND Exists('$(VSSolution)') AND '$(CompileToolsVersion)' != '2.0'"
+			ToolsVersion="$(CompileToolsVersion)" />
+		
+		<MSBuild
+			Projects="$(VSProjects)"
+			Properties="	Configuration=%(VCBuildConfigigurations.Identity);
+								Platform=$(VSPlatform);
+								CurrentTarget=$(VSTarget)"
+			Targets="$(VSTarget)"
+			Condition="'$(VSLocalize)' != 'localize' AND !Exists('$(VSSolution)') AND '$(CompileToolsVersion)' != '2.0'"
+			ToolsVersion="$(CompileToolsVersion)" />			
+		
+		<!-- Configuration NOT given -> Localization -->		
+		<Message
+			Text="Configuration='$(Configurations)'"
+			Condition="'$(VSLocalize)' == 'localize'">
+		</Message>
+		
+		<MSBuild
+			Projects="$(MSBuildProjectFile)"
+			Properties="	VSConfiguration=$(Configurations);
+								VSPlatform=$(VSPlatform);
+								VSTarget=$(VSTarget);
+								VSProjects=$(VSProjects);
+								VSSolution=$(VSSolution);
+								VSConfigurationPrefix=$(VSConfigurationPrefix)"
+			Targets="BuildSubTargetLocalization"
+			Condition="'$(VSLocalize)' == 'localize' AND '$(CompileToolsVersion)' != '2.0'"
+			ToolsVersion="$(CompileToolsVersion)" />		
+		
+		<!-- VS2005 -->		
+		<!--get the VisualStudio Path-->		
+		<GetVisualStudioPath
+			Version="$(VisualStudioVersion)"
+			Condition="'$(VisualStudioVersion)' != '' AND '$(CompileToolsVersion)' == '2.0'">
+			<Output
+				TaskParameter="Path"
+				PropertyName="VisualStudioPath" />
+		</GetVisualStudioPath>	
+
+		<MsBuild
+			Projects="$(MSBuildProjectFile)"
+			Properties="	VSConfiguration=%(VCBuildConfigigurations.Identity);
+								VSConfigurationPrefix=$(VSConfigurationPrefix);
+								VSPlatform=$(VSPlatform);
+								VSTarget=$(VSTarget);
+								VSProjects=$(VSProjects);
+								VSSolution=$(VSSolution);
+								VisualStudioVersion=$(VisualStudioVersion);
+								VisualStudioPath=$(VisualStudioPath);
+								CompileToolsVersion=$(CompileToolsVersion)"
+			Targets="BuildSubTarget2005"
+			Condition="'$(VSLocalize)' != 'localize' AND '$(CompileToolsVersion)' == '2.0'" />							
+		
+		<MSBuild
+			Projects="$(MSBuildProjectFile)"
+			Properties="	VSConfiguration=%(VCBuildConfigigurations.Identity);
+								VSConfigurationPrefix=$(VSConfigurationPrefix);
+								VSPlatform=$(VSPlatform);
+								VSTarget=$(VSTarget);
+								VSProjects=$(VSProjects);
+								VSSolution=$(VSSolution);
+								VisualStudioVersion=$(VisualStudioVersion);
+								VisualStudioPath=$(VisualStudioPath);
+								CompileToolsVersion=$(CompileToolsVersion)"
+			Targets="BuildSubTargetLocalization2005"
+			Condition="'$(VSLocalize)' == 'localize' AND '$(CompileToolsVersion)' == '2.0'" />		
+
+	</Target>
+	
+	
+	<Target
+		Name="BuildSubTarget2005"
+		Condition="'$(CompileToolsVersion)' == '2.0'">
+		
+		<CreateProperty
+			Value="%22$(VisualStudioPath)\devenv%22 /$(VSTarget) %22$(VSConfiguration)|$(VSPlatform)%22 /Project %22$(VSProjects)%22 %22$(VSSolution)%22 "
+			Condition="'$(VSProjects)' != '' AND '$(VSSolution)' != '' AND '$(VSConfiguration)' != '' AND '$(CompileToolsVersion)' == '2.0'">
+			<Output
+				TaskParameter="Value"
+				PropertyName="ExecuteCommand" />
+		</CreateProperty>
+		
+		<CreateProperty
+			Value="%22$(VisualStudioPath)\devenv%22 /$(VSTarget) %22$(VSConfiguration)|$(VSPlatform)%22 %22$(VSProjects)%22"
+			Condition="'$(VSProjects)' != '' AND '$(VSSolution)' == '' AND '$(VSConfiguration)' != '' AND '$(CompileToolsVersion)' == '2.0'">
+			<Output
+				TaskParameter="Value"
+				PropertyName="ExecuteCommand" />
+		</CreateProperty>						
+		
+		<Message
+			Text="Building Project and Dependencies: $(ExecuteCommand)"
+			Condition="'$(ExecuteCommand)' != '' AND '$(CompileToolsVersion)' == '2.0'"></Message>	
+		
+		<Exec
+			Command="$(ExecuteCommand)"
+			Condition="'$(ExecuteCommand)' != '' AND '$(CompileToolsVersion)' == '2.0'"></Exec>
+		
+	</Target>
+	
+	<Target
+		Name="BuildSubTargetLocalization2005"
+		Condition="'$(CompileToolsVersion)' == '2.0'">
+
+		<Message
+			Text="Target: BuildSubTargetLocalization2005" />
+
+		<!-- localization -->
+		<GetVisualStudioConfigurations
+			ProjectFilePath="$(VSProjects)"
+			ConfigurationPrefix="$(VSConfigurationPrefix)"
+			Condition="'$(VSConfiguration)' == ''">
+			<Output
+				TaskParameter="Configurations"
+				ItemName="Configurations" />			
+		</GetVisualStudioConfigurations>
+
+		<Message
+			Text="ConfigurationFound='%(Configurations.Identity)'"></Message>	
+		
+		<Message
+			Text="Building... " />
+		<Message
+			Text="VSPlatform: $(VSPlatform) " />
+		<Message
+			Text="Configuration: %(Configurations.Identity)" />		
+		<Message
+			Text="Target: $(VSTarget)" />
+		<Message
+			Text="Project: $(VSProjects)" />
+		<Message
+			Text="No Solution defined in Buildserver Project configuration file: '$(MsBuildConfigFilePath)'"
+			Condition="'$(VSSolution)' == ''"
+			Importance="high" />
+		<Message
+			Text="Solution file: '$(VSSolution)'"
+			Condition="'$(VSSolution)' != ''" />			
+		
+		<MSBuild
+			Projects="$(MSBuildProjectFile)"
+			Properties="	VisualStudioPath=$(VisualStudioPath);
+								VSPlatform=$(VSPlatform);
+								Configuration=%(Configurations.Identity);
+								VSPlatform=$(VSPlatform);
+								VSProjects=$(VSProjects);
+								VSSolution=$(VSSolution);
+								VSTarget=$(VSTarget)"
+			Targets="BuildSubTargetLocalization2005_SingleItem" />									
+				
+	</Target>
+	
+	<Target
+		Name="BuildSubTargetLocalization2005_SingleItem">
+		<CreateProperty
+			Value="%22$(VisualStudioPath)\devenv%22 /$(VSTarget) %22$(Configuration)|$(VSPlatform)%22 /Project %22$(VSProjects)%22 %22$(VSSolution)%22 "
+			Condition="'$(VSProjects)' != '' AND '$(VSSolution)' != ''">
+			<Output
+				TaskParameter="Value"
+				PropertyName="ExecuteCommand" />
+		</CreateProperty>
+		
+		<CreateProperty
+			Value="%22$(VisualStudioPath)\devenv%22 /$(VSTarget) %22$(Configuration)|$(VSPlatform)%22 %22$(VSProjects)%22"
+			Condition="'$(VSProjects)' != '' AND '$(VSSolution)' == ''">
+			<Output
+				TaskParameter="Value"
+				PropertyName="ExecuteCommand" />
+		</CreateProperty>
+				
+		<Message
+			Text="Building Project and Dependencies: $(ExecuteCommand)"
+			Condition="'$(ExecuteCommand)' != ''"></Message>
+			
+		<Exec
+			Command="$(ExecuteCommand)"
+			Condition="'$(ExecuteCommand)' != ''"></Exec>
+	
+	</Target>
+	
+	<Target
+		Name="BuildSubTargetLocalization">
+
+		<Message
+			Text="Target: BuildSubTargetLocalization" />
+
+		<!-- localization -->
+		<GetVisualStudioConfigurations
+			ProjectFilePath="$(VSProjects)"
+			ConfigurationPrefix="$(VSConfigurationPrefix)"
+			Condition="'$(VSConfiguration)' == ''">
+			<Output
+				TaskParameter="Configurations"
+				ItemName="Configurations" />			
+		</GetVisualStudioConfigurations>
+
+		<Message
+			Text="Configuration='%(Configurations.Identity)'"></Message>
+		
+		<Message
+			Text="Building... " />
+		<Message
+			Text="VSPlatform: $(VSPlatform) " />
+		<Message
+			Text="Configuration: %(Configurations.Identity)" />		
+		<Message
+			Text="Target: $(VSTarget)" />
+		<Message
+			Text="Project: $(VSProjects)" />
+		<Message
+			Text="No Solution file is defined in Buildserver Project configuration file: $(MsBuildConfigName).conf.proj"
+			Condition="'$(VSSolution)' == ''"
+			Importance="high" />
+		<Message
+			Text="Solution file: '$(VSSolution)'"
+			Condition="'$(VSSolution)' != ''" />		
+											
+		
+		<MSBuild
+			Projects="$(VSProjects)"
+			Properties="	Configuration=%(Configurations.Identity);
+								Platform=$(VSPlatform);
+								CurrentTarget=$(VSTarget)"
+			Targets="$(VSTarget)"
+			Condition="'$(VSSolution)' == ''" />
+		
+		<MSBuild
+			Projects="$(VSSolution)"
+			Properties="	Configuration=%(Configurations.Identity);
+								Platform=$(VSPlatform);
+								CurrentTarget=$(VSTarget)"
+			Targets="$(VSTarget)"
+			Condition="'$(VSSolution)' != ''" />
+		
+		
+				
+	</Target>
+		
+	<Target
+		Name="TPBeforeBuild">
+	
+		<Error
+			Text="The 'MsBuildConfigFile' was not found at the specified location: '$(MsBuildConfigFilePath)'"
+			Condition="!EXISTS('$(MsBuildConfigFilePath)') " />
+			
+		<Message
+			Text="DeleteFilesBeforeBuild" />
+		
+		<!-- Delete Files Using CreateItem -->		
+		<CreateItem
+			Include="$(FilesToDelete)">
+			<Output
+				TaskParameter="Include"
+				ItemName="DeleteFilesBeforeBuild" />
+		</CreateItem>
+				
+		<Delete
+			Files="@(DeleteFilesBeforeBuild)" />		
+		
+	</Target>
+	
+	<Target
+		Name="AfterBuild"
+		Outputs="%(VCBuildConfig.Platform) - %(VCBuildConfig.Configuration) - %(VCBuildConfig.Target) - %(VCBuildConfig.Projects) - %(VCBuildConfig.ReleaseFolder)">												
+		
+			
+		<MSBuild
+			Projects="$(MSBuildProjectFile)"
+			Properties="	DirectoryPath=%(VCBuildConfig.CleanFolder);
+								FilesToKeep=%(VCBuildConfig.FilesToKeep);
+								CurrentTarget=%(VCBuildConfig.ItemTarget)"
+			Targets="DeleteContentInFolder"
+			Condition="'%(VCBuildConfig.ItemTarget)' == 'Package'" />
+		
+		<MsBuild
+			Projects="$(MSBuildProjectFile)"
+			Properties="ReleaseFolder=%(VCBuildConfig.ReleaseFolder);FilesToDelete=$(FilesToDelete);*.lib;*.exp"
+			ContinueOnError="true"
+			Targets="RemoveObsoleteFilesFromReleaseDir" />		
+								
+	</Target>
+	
+	<Target
+		Name="RemoveObsoleteFilesFromReleaseDir"
+		Condition="'$(ReleaseFolder)' != ''">
+		<!-- Resolve Filenames -->
+		
+		<Message
+			Text="FilesToDelete (init): $(FilesToDelete)"></Message>
+		
+		<GetItemsfromProperty
+			PropertyValue="$(FilesToDelete)">
+		<Output
+				TaskParameter="Items"
+				ItemName="DeleteFileGroup" />
+		</GetItemsfromProperty>				
+				
+		<Message
+			Text="DeleteFileGroup (RecursiveDir): %(DeleteFileGroup.RecursiveDir)"
+			ContinueOnError="true"></Message>			
+		
+		<CreateItem
+			Include="%(DeleteFileGroup.Identity)"
+			Condition="'%(DeleteFileGroup.RecursiveDir)' != ''"
+			ContinueOnError="true">
+		<Output
+				TaskParameter="Include"
+				ItemName="ScannedFiles" />
+		</CreateItem>						
+		
+		<CreateItem
+			Include="**\%(DeleteFileGroup.Identity)"
+			Condition="'%(DeleteFileGroup.RecursiveDir)' == ''"
+			ContinueOnError="true">
+		<Output
+				TaskParameter="Include"
+				ItemName="ScannedFiles" />
+		</CreateItem>						
+		
+		<Message
+			Text="DeleteFileGroup (init): %(DeleteFileGroup.Identity)"></Message>		
+		
+		<FindUnderPath
+			Files="%(ScannedFiles.Identity)"
+			Path="$(ReleaseFolder)"
+			InPath="">
+		  <Output
+				TaskParameter="InPath"
+				ItemName="DeleteTargets" />
+		  <Output
+				TaskParameter="OutOfPath"
+				ItemName="FilesNotFoundInPath" />
+		</FindUnderPath>
+		
+		<Message
+			Text="Found file to delete:  %(DeleteTargets.FullPath)" />
+							
+		<Delete
+			Files="%(DeleteTargets.FullPath)" />		
+	</Target>
+
+	<Target
+		Name="CopyPrepareObfuscation"
+		Condition="'$(ReleaseFileName)' != ''">
+		
+		<!-- Resolve Filenames -->
+		<GetItemsfromProperty
+			PropertyValue="$(ReleaseFileName)">
+			<Output
+				TaskParameter="Items"
+				ItemName="ReleseFileGroup" />
+		</GetItemsfromProperty>		
+		
+		<Message
+			Text="%(ReleseFileGroup.Identity)" />
+		<!-- Resolve Filenames -->
+		
+		<CreateItem
+			Include="$(ReleaseFolder)\%(ReleseFileGroup.Identity)">
+			<Output
+				TaskParameter="Include"
+				ItemName="ReleaseFiles" />
+		</CreateItem>		
+		
+		<CreateItem
+			Include="$(NotObfuscatedFolder)\%(ReleseFileGroup.Identity)">
+			<Output
+				TaskParameter="Include"
+				ItemName="NotFuscatedFiles" />
+		</CreateItem>
+		
+		<exec
+			command="mkdir $(NotObfuscatedFolder)"
+			ContinueOnError="true"></exec>
+		
+		<Copy
+			SourceFiles="@(NotFuscatedFiles)"
+			DestinationFiles="@(NotFuscatedFiles->'$(ReleaseFolder)\%(RecursiveDir)%(Filename)%(Extension)')"
+			ContinueOnError="true" />		
+		
+		<Copy
+			SourceFiles="@(ReleaseFiles)"
+			DestinationFiles="@(ReleaseFiles->'$(NotObfuscatedFolder)\%(RecursiveDir)%(Filename)%(Extension)')"
+			ContinueOnError="true" />	
+		
+	</Target>
+	
+	<Target
+		Name="CopyPrepareSigning"
+		Condition="'$(FilesToCopy)' != ''">
+
+		<Message
+			Text="Files to Copy: $(FilesToCopy)"></Message>
+		
+		<!-- Create release file ItemGroup -->
+		<CreateItem
+			Include="$(FilesToCopy)">
+			<Output
+				TaskParameter="Include"
+				ItemName="ReleaseFiles" />
+		</CreateItem>
+
+		<!--copy files to release destination-->
+		<Copy
+			SourceFiles="@(ReleaseFiles)"
+			DestinationFiles="@(ReleaseFiles->'$(ReleaseFolder)\%(RecursiveDir)%(Filename)%(Extension)')" />
+
+	</Target>
+	
+	<Target
+		Name="CopyNotFuscatedFiles">
+
+		<Message
+			Text="NotObfuscatedFiles to Copy: $(NotObfuscatedFiles)"></Message>
+
+		<!-- Create release file ItemGroup -->
+		<CreateItem
+			Include="$(NotObfuscatedFiles)">
+			<Output
+				TaskParameter="Include"
+				ItemName="NotObfuscatedFiles" />
+		</CreateItem>
+
+		<!--copy files to release destination-->
+		<Copy
+			SourceFiles="@(NotObfuscatedFiles)"
+			DestinationFiles="@(NotObfuscatedFiles->'$(NotObfuscatedFolder)\%(RecursiveDir)%(Filename)%(Extension)')" />
+								
+	</Target>	
+	
+	<Target
+		Name="CreatePublisherPolicy"
+		Condition="'$(PP_Platform)' != '' AND '$(AssemblyFileName)' != ''">
+		
+		<Message
+			Text="AssemblyFileName: '$(AssemblyFileName)'"></Message>
+		<Message
+			Text="AssemblyFilePath: '$(AssemblyFilePath)'"></Message>
+		
+		<!--get the Windows SDK path-->
+		<GetWindowsSdkPath
+			Condition="'$(SdkPath)' == ''">
+			<Output
+				TaskParameter="Path"
+				PropertyName="SdkPath" />
+		</GetWindowsSdkPath>
+		
+		<CreateProperty
+			Condition="'$(PP_Platform)' == 'x64' AND '$(AssemblyLinkerFile)' == ''"
+			Value="$(SdkPath)\bin\x64\al.exe">
+            <Output
+				TaskParameter="Value"
+				PropertyName="ALFile" />
+        </CreateProperty>
+		
+		<CreateProperty
+			Condition="'$(PP_Platform)' != 'x64' AND '$(AssemblyLinkerFile)' == ''"
+			Value="$(SdkPath)\bin\al.exe">
+            <Output
+				TaskParameter="Value"
+				PropertyName="ALFile" />
+        </CreateProperty>
+		
+		<CreateProperty
+			Condition="'$(AssemblyLinkerFile)' != ''"
+			Value="$(AssemblyLinkerFile)">
+            <Output
+				TaskParameter="Value"
+				PropertyName="ALFile" />
+        </CreateProperty>
+			
+	
+		<Message
+			Text="Target: CreatePublisherPolicy" />	
+		
+		<CreateItem
+			Include="$(AssemblyFilePath)\**\$(AssemblyFileName)">
+			<Output
+				TaskParameter="Include"
+				ItemName="ScannedFiles" />
+		</CreateItem>
+
+		<FindUnderPath
+			Files="@(ScannedFiles)"
+			Path="$(AssemblyFilePath)">
+			<Output
+				TaskParameter="InPath"
+				ItemName="AssemblyFilesFoundInPath" />
+		</FindUnderPath>
+
+		<GetAssemblyIdentity
+			AssemblyFiles="@(AssemblyFilesFoundInPath)">
+			<Output
+				TaskParameter="Assemblies"
+				ItemName="AssemblyInfo" />
+		</GetAssemblyIdentity>
+
+		<CreateItem
+			Include="@(AssemblyFilesFoundInPath)"
+			AdditionalMetadata="AssemblyName=%(AssemblyInfo.Name);AssemblyVersion=%(AssemblyInfo.Version);PublicKeyToken=%(AssemblyInfo.PublicKeyToken)">
+			<Output
+				TaskParameter="Include"
+				ItemName="ASFiles" />
+
+		</CreateItem>
+
+		<Message
+			Text="AssemblyFile=%(ASFiles.FullPath)" />
+		<Message
+			Text="AssemblyName=%(ASFiles.AssemblyName)" />
+		<Message
+			Text="AssemblyVersion=%(ASFiles.AssemblyVersion)" />
+		<Message
+			Text="PublicKeyToken=%(ASFiles.PublicKeyToken)" />
+		<Message
+			Text="AssemblyLinkerFile=$(ALFile)" />
+		<Message
+			Text="KeyFile=$(KeyFile)" />
+		<Message
+			Text="Platform=$(PP_Platform)" />
+		<Message
+			Text="Copyright=$(PP_Copyright)" />
+		<Message
+			Text="Description=$(PP_Description)" />
+
+
+		<PublisherPolicy
+			AssemblyFile="%(ASFiles.FullPath)"
+			AssemblyName="%(ASFiles.AssemblyName)"
+			AssemblyVersion="%(ASFiles.AssemblyVersion)"
+			PublicKeyToken="%(ASFiles.PublicKeyToken)"
+			AssemblyLinkerFile="$(ALFile)"
+			CompanyName="$(CompanyName)"
+			KeyFile="$(KeyFile)"
+			Copyright="$(Copyright)"
+			Description="$(Description)"
+			Platform="$(PP_Platform)"
+			ContinueOnError="false" />										 
+
+	</Target>	
+
+</Project>

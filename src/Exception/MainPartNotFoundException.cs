@@ -1,8 +1,6 @@
-﻿namespace DataMigrator.Exception
+﻿namespace Pawod.MigrationContainer.Exception
 {
-    using System;
-
-    public class MainPartNotFoundException : Exception
+    public class MainPartNotFoundException : System.Exception
     {
         public string CurrentPath { get; protected set; }
 
@@ -13,7 +11,7 @@
 
         private static string CreateMessage(string currentPath)
         {
-            return string.Format("Main part of MigrationContainer could not be found at : '{0}'.", currentPath);
+            return $"Main part of MigrationContainer could not be found at : '{currentPath}'.";
         }
     }
 }

@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pawod.MigrationContainer", "src\Pawod.MigrationContainer.csproj", "{7F952165-681C-421C-BC36-CE7131294FCD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pawod.MigrationContainer.Test", "test\Pawod.MigrationContainer.Test.csproj", "{B3857C34-7F9D-40FD-8C97-65291DF52920}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7F952165-681C-421C-BC36-CE7131294FCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F952165-681C-421C-BC36-CE7131294FCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F952165-681C-421C-BC36-CE7131294FCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F952165-681C-421C-BC36-CE7131294FCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3857C34-7F9D-40FD-8C97-65291DF52920}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3857C34-7F9D-40FD-8C97-65291DF52920}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3857C34-7F9D-40FD-8C97-65291DF52920}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3857C34-7F9D-40FD-8C97-65291DF52920}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
