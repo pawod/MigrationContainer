@@ -7,8 +7,8 @@
 
 4. [Use of Migration Containers](#4-use-of-migration-containers)
 
-   - [Container Types](#4.1-container-types)
-   - [Extending Container Types](#4.2-extending-container-types)
+   - [Container Types](#4-1-container-types)
+   - [Extending Container Types](#4-2-extending-container-types)
    - [Exporting Data (Creating Containers)](#4.3-exporting-data-creating-containers)
    - [Importing Data (Extracting Data From Containers)](#4.4-importing-data-extracting-data-from-containers)
 
