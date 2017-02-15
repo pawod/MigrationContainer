@@ -1,11 +1,11 @@
 # Table of Contents
-1. [About MigrationContainer](#about-migrationcontainer)
+1. [About MigrationContainer](#1-about-migrationcontainer)
 
-2. [Features](#features)
+2. [Features](#2-features)
 
-3. [Background](#background)
+3. [Background](#3-background)
 
-4. [Use of Migration Containers](#use-of-migration-containers)
+4. [Use of Migration Containers](#4-use-of-migration-containers)
 
    - [Container Types](#container-types)
 
