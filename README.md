@@ -2,6 +2,8 @@
 
 Author: Paul Wódz
 
+GitHub: pawod
+
 Contact: paulwodz@gmail.com
 
 
