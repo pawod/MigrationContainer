@@ -7,10 +7,10 @@
 
 4. [Use of Migration Containers](#4-use-of-migration-containers)
 
-   - [Container Types](#4-1-container-types)
-   - [Extending Container Types](#4-2-extending-container-types)
-   - [Exporting Data (Creating Containers)](#4.3-exporting-data-creating-containers)
-   - [Importing Data (Extracting Data From Containers)](#4.4-importing-data-extracting-data-from-containers)
+   - [Container Types](#41-container-types)
+   - [Extending Container Types](#42-extending-container-types)
+   - [Exporting Data (Creating Containers)](#43-exporting-data-creating-containers)
+   - [Importing Data (Extracting Data From Containers)](#44-importing-data-extracting-data-from-containers)
 
 5. [Technical Details](technical-details)
    - [Container Format](#container-format)
@@ -56,12 +56,11 @@ You run a cloud storage solution and plan to change your system's architecture, 
 
 ## 3. Background
 
-This fr`amework is the result of a request made by [Teamplace](https://www.teamplace.net/en/). Simultaneously it also served as topic for my bachelor's [thesis](https://drive.google.com/open?id=0B_-vg-Ca4cDReUQ5LTZvWk0zemc). With kind permission of Teamplace the main framework is now released to the public. 
+This framework is the result of a request made by [Teamplace](https://www.teamplace.net/en/). Simultaneously it also served as topic for my bachelor's [thesis](https://drive.google.com/open?id=0B_-vg-Ca4cDReUQ5LTZvWk0zemc). With kind permission of Teamplace the main framework is now released to the public. 
 
 Probably MigrationContainer could be converted into a Mono or DNX project to be used on further platforms, not only Windows as currently.
 
 More details on MigrationContainer's background, its use and the underlying container format can be found in the wiki or the [thesis](https://drive.google.com/open?id=0B_-vg-Ca4cDReUQ5LTZvWk0zemc) itself.
-
 
 
 ## 4. Use of Migration Containers
