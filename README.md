@@ -14,4 +14,4 @@ More details on MigrationContainer's background, its use and the underlying cont
 
 ## License
 
-This project is published under the GPL 3.0 License. The obligatory files are located in the repository's root. For a short description of this license see [this page](https://choosealicense.com/licenses/gpl-3.0/).
+This project is published under the GPL 3.0 License. The obligatory files are located in the repository's root. For a short description of that license see [this page](https://choosealicense.com/licenses/gpl-3.0/).
